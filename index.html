@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>翼启 AeroEdu — 浏览器端无人机飞控可视化教学平台</title>
+  <meta name="description" content="基于真实飞行动力学与 PID 控制的无人机飞控教学仿真平台,支持中文自然语言场景生成。">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Three.js r160 (ES Module) + OrbitControls, 通过 importmap 解析 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- 3D 渲染容器 -->
+  <div id="ae-canvas-wrap"></div>
+
+  <!-- UI 层 (控制面板 + 遥测 HUD + AI 场景) -->
+  <div id="ae-ui-root"></div>
+
+  <!-- 模块引导: 加载 Three.js -> 暴露全局 -> 顺序加载业务脚本 -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    // 暴露为全局, 兼容现有 IIFE 业务模块 (它们以 window.THREE 为依赖)
+    window.THREE = THREE;
+    window.OrbitControls = OrbitControls;
+
+    // 顺序加载业务脚本 (physics -> aiScenario -> scene -> ui -> main)
+    const scripts = [
+      'js/physics.js',
+      'js/aiScenario.js',
+      'js/scene.js',
+      'js/ui.js',
+      'js/main.js'
+    ];
+    for (const src of scripts) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('加载失败: ' + src));
+        document.head.appendChild(s);
+      });
+    }
+    console.log('%c翼启 AeroEdu 加载完成 ✈', 'color:#4fd1ff;font-weight:bold;font-size:14px');
+  </script>
+</body>
+</html>

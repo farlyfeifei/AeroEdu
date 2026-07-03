@@ -1,0 +1,127 @@
+/* AeroEdu — 深色科技感 UI, 航空仪表盘风格 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0f14;
+  --panel: rgba(16, 24, 32, 0.88);
+  --panel-border: rgba(79, 209, 255, 0.18);
+  --accent: #4fd1ff;
+  --accent-2: #ffb84f;
+  --text: #e6f0f7;
+  --text-dim: #8aa0b0;
+  --danger: #ff5a6e;
+  --ok: #4fe0a0;
+  --mono: 'JetBrains Mono', 'Consolas', 'SF Mono', monospace;
+  --sans: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+}
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--sans); }
+#ae-canvas-wrap { position: fixed; inset: 0; z-index: 0; }
+#ae-canvas-wrap canvas { display: block; }
+
+/* ===== 左侧控制面板 ===== */
+.ae-panel {
+  position: fixed; top: 16px; left: 16px; width: 320px; max-height: calc(100vh - 32px);
+  overflow-y: auto; z-index: 10;
+  background: var(--panel); backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.ae-panel::-webkit-scrollbar { width: 6px; }
+.ae-panel::-webkit-scrollbar-thumb { background: rgba(79,209,255,0.25); border-radius: 3px; }
+.ae-panel-header { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--panel-border); }
+.ae-logo { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+.ae-logo em { font-style: normal; font-size: 13px; color: var(--text-dim); font-weight: 400; letter-spacing: 1px; }
+.ae-badge { font-size: 11px; color: var(--text-dim); }
+
+.ae-section { margin-bottom: 16px; }
+.ae-section-title { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.ae-hint { color: var(--text-dim); font-size: 10px; text-transform: none; letter-spacing: 0; }
+
+.ae-mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+.ae-mode-btn {
+  padding: 8px 0; background: rgba(79,209,255,0.06); border: 1px solid var(--panel-border);
+  color: var(--text-dim); border-radius: 8px; cursor: pointer; font-size: 13px; transition: all .15s;
+}
+.ae-mode-btn:hover { border-color: var(--accent); color: var(--text); }
+.ae-mode-btn.active { background: var(--accent); color: #062028; border-color: var(--accent); font-weight: 600; }
+
+.ae-row { display: grid; grid-template-columns: 56px 1fr 52px; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ae-row label { font-size: 12px; color: var(--text-dim); }
+.ae-row .ae-val { font-family: var(--mono); font-size: 11px; color: var(--accent); text-align: right; }
+.ae-row.ae-tight { grid-template-columns: repeat(3, 1fr); }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+  background: rgba(79,209,255,0.15); border-radius: 2px; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer; box-shadow: 0 0 8px rgba(79,209,255,0.6);
+}
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
+
+.ae-pid-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 8px; }
+.ae-pid-tab { padding: 5px 0; background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); color: var(--text-dim); border-radius: 6px; cursor: pointer; font-size: 11px; }
+.ae-pid-tab.active { background: rgba(79,209,255,0.18); color: var(--accent); border-color: var(--accent); }
+
+.ae-pid-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 6px; }
+.ae-pid-presets button { padding: 5px 0; background: rgba(255,184,79,0.06); border: 1px solid rgba(255,184,79,0.2); color: var(--accent-2); border-radius: 6px; cursor: pointer; font-size: 11px; }
+.ae-pid-presets button:hover { background: rgba(255,184,79,0.18); }
+
+.ae-mini-btn { padding: 7px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); color: var(--text); border-radius: 7px; cursor: pointer; font-size: 12px; width: 100%; }
+.ae-mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ===== 遥测 HUD ===== */
+.ae-hud {
+  position: fixed; top: 16px; right: 16px; z-index: 10; width: 220px;
+  background: var(--panel); backdrop-filter: blur(14px); border: 1px solid var(--panel-border);
+  border-radius: 14px; padding: 14px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.ae-hud-row { display: grid; grid-template-columns: 64px 1fr 28px; align-items: baseline; gap: 6px; margin-bottom: 4px; font-size: 11px; }
+.ae-hud-row span:first-child { color: var(--text-dim); }
+.ae-hud-row b { font-family: var(--mono); color: var(--accent); font-size: 14px; text-align: right; font-weight: 600; }
+.ae-hud-row span:last-child { color: var(--text-dim); font-size: 10px; }
+.ae-hud-row.ae-rpm b { font-size: 11px; color: var(--accent-2); }
+.ae-hud-divider { height: 1px; background: var(--panel-border); margin: 6px 0; }
+.ae-hud-status { margin-top: 8px; padding: 5px 8px; background: rgba(79,224,160,0.1); border: 1px solid rgba(79,224,160,0.3); border-radius: 6px; font-size: 11px; color: var(--ok); text-align: center; }
+
+/* ===== AI 场景面板 ===== */
+.ae-ai {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+  width: min(720px, calc(100vw - 32px));
+  background: var(--panel); backdrop-filter: blur(14px); border: 1px solid var(--panel-border);
+  border-radius: 14px; padding: 12px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.ae-ai-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.ae-ai-title { font-size: 14px; font-weight: 600; color: var(--accent-2); }
+.ae-ai-sub { font-size: 11px; color: var(--text-dim); }
+.ae-ai-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.ae-ai-input-row input {
+  flex: 1; padding: 9px 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);
+  border-radius: 8px; color: var(--text); font-size: 13px; font-family: var(--sans); outline: none;
+}
+.ae-ai-input-row input:focus { border-color: var(--accent); }
+.ae-ai-input-row input::placeholder { color: var(--text-dim); }
+.ae-ai-input-row button {
+  padding: 0 18px; background: var(--accent-2); color: #2a1a00; border: none; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-weight: 600;
+}
+.ae-ai-input-row button:hover { filter: brightness(1.1); }
+.ae-ai-examples { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.ae-chip {
+  font-size: 11px; padding: 4px 9px; background: rgba(79,209,255,0.08); border: 1px solid var(--panel-border);
+  color: var(--text-dim); border-radius: 12px; cursor: pointer; transition: all .15s;
+}
+.ae-chip:hover { color: var(--accent); border-color: var(--accent); background: rgba(79,209,255,0.15); }
+.ae-ai-report {
+  font-family: var(--mono); font-size: 11px; color: var(--ok); background: rgba(0,0,0,0.3);
+  border-radius: 8px; padding: 8px 10px; max-height: 120px; overflow-y: auto; white-space: pre-wrap;
+  border: 1px solid rgba(79,224,160,0.15);
+}
+.ae-ai-report:empty { display: none; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 820px) {
+  .ae-panel { width: calc(100vw - 32px); max-height: 40vh; }
+  .ae-hud { width: calc(100vw - 32px); top: auto; bottom: 200px; }
+  .ae-ai { width: calc(100vw - 32px); }
+}
